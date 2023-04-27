@@ -23,7 +23,7 @@ void	print_gard(int status){
 	char path[][20] = {"./GameData/gard", "./GameData/travel",\
 		"./GameData/battle", "./GameData/market", "./GameData/bag"};
 
-	// OS == UNIX ? system("clear") : system("cls");
+	OS == UNIX ? system("clear") : system("cls");
 	fp = fopen(path[status], "r");
 	while ((c = fgetc(fp)) != EOF) {
 		printf(YELLOW"%c"DEFAULT, c);

@@ -50,9 +50,8 @@ void	init_user_data(user_t *user){
  * @return void
  */
 void	parse_user_data(FILE *fp, user_t *user){
-	char line[100];
+	char line[100] = {};
 
-	user->list = (p_list_t *)malloc(sizeof(p_list_t));
 	ListInit(user->list);
 	while (fgets(line, 100, fp) != NULL){
 		if (line[0] == 'I'){

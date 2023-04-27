@@ -55,7 +55,7 @@ void    pokemon_free_all(p_list_t *plist){
     p_t *tmp = plist->head->next;
     p_t *tmp2;
 
-    while (plist->numOfData == 1){
+    while (plist->numOfData != 1){
         tmp2 = tmp->next;
         delete_node(plist, tmp);
         tmp = tmp2;
