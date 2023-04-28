@@ -14,7 +14,6 @@ void	market(user_t *user){
 	int		cnt;
 	int		item[2] = {1000, 2000};
 
-
 	while(1){
 		cnt = 0;
 		c = print_menu(user->money);

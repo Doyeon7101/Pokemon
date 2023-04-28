@@ -20,8 +20,8 @@ char	fflush_and_getc(){
 void	print_gard(int status){
 	FILE *fp;
 	int c;
-	char path[][20] = {"./GameData/gard", "./GameData/travel",\
-		"./GameData/battle", "./GameData/market", "./GameData/bag"};
+	char path[][30] = {"./GameData/ascii/gard", "./GameData/ascii/travel",\
+		"./GameData/ascii/battle", "./GameData/ascii/market", "./GameData/ascii/bag"};
 
 	OS == UNIX ? system("clear") : system("cls");
 	fp = fopen(path[status], "r");
