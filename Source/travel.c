@@ -1,11 +1,11 @@
 #include "pokemon.h"
 
-type_t  get_type(char *type){
-    if (strcmp(type, "fire") == 0)
+int get_type(char *type){
+    if (strcmp(type, "불") == 0)
         return FIRE;
-    else if (strcmp(type, "water") == 0)
+    else if (strcmp(type, "물") == 0)
         return WATER;
-    else if (strcmp(type, "grass") == 0)
+    else if (strcmp(type, "풀") == 0)
         return GRASS;
     return 0;
 }
@@ -13,14 +13,12 @@ type_t  get_type(char *type){
 /**
  * @brief compare two type
  * @return 0 if same or normal type, 1 if a is strong, -1 if a is weak
- * @
+ * FIRE < WATER < GRASS < FIRE 
 */
-double  get_weight(type_t a, type_t b){
-    if (a == NORMAL || b == NORMAL)
-        return 1;
-    if (a == GRASS && b == FIRE)
-        return 1.5;
-    return a - b ? 1.5 : 0.5;
+double  get_weight(int a, int b){
+    if ((a == GRASS && b == FIRE) || (a == FIRE && b == GRASS))
+        return b - a > 0 ? 1.5 : 0.5;
+    return a - b > 0 ? 1.5 : 0.5;
 }
 
 p_t *pick_player_pokemon(p_list_t *list){
@@ -114,7 +112,25 @@ char    print_bag(user_t *user){
     printf(BLUE"1. 몬스터볼:       x%d\n"DEFAULT, user->item[MO]);
     printf(BLUE"2. 회복 물약:      x%d\n"DEFAULT, user->item[ME]);
     printf(YELLOW"%s\n> "DEFAULT, BAR);
-    return (fflush_and_getc());
+    return fflush_and_getc();
+}
+
+void    end_game_and_ask_for_travel(user_t *user, int *status){
+    char    c;
+
+    pokemon_free_all(user->list);
+    *status = 3;
+    while(1){
+        set_console(4, 0, "넌 이제 내꺼야! 여행을 떠나볼까?(Y/N)\n"); c = fflush_and_getc();
+        if (c == 'N'){
+            pokemon_free_all(user->list);
+            save_user_data(user);
+            set_console(4, 0, "저장완료!\n"); fflush_and_getc();
+            set_console(4, 0, "다음에 또 만나자!\n"); fflush_and_getc();
+            exit(0);
+        }
+        else if (c == 'Y'){ pokemon_free_all(user->list); return; }
+    }
 }
 
 int bag(user_t *user, p_t *player, p_t *enemy, int *status){
@@ -133,19 +149,7 @@ int bag(user_t *user, p_t *player, p_t *enemy, int *status){
         else if (c == '1'){
             monsterball(user, enemy, status);
             if (user->list->numOfData == 6){
-                pokemon_free_all(user->list);
-                *status = 3;
-                while(1){
-                    set_console(4, 0, "넌 이제 내꺼야! 여행을 떠나볼까?(Y/N)\n"); c = fflush_and_getc();
-                    if (c == 'N'){
-                        pokemon_free_all(user->list);
-                        save_user_data(user);
-                        set_console(4, 0, "저장완료!\n"); fflush_and_getc();
-                        set_console(4, 0, "다음에 또 만나자!\n"); fflush_and_getc();
-                        exit(0);
-                    }
-                    else if (c == 'Y'){ pokemon_free_all(user->list); break; }
-                }
+                end_game_and_ask_for_travel(user, status);
             }
             return 1;
         }
@@ -166,6 +170,7 @@ void    run_away(p_t *enemy, int *status) {
     double  success_rate = get_success_rate(enemy->min_HP, hp_range, run_prob, 4);
     double  rand_num = (double)rand() / RAND_MAX;
 
+    srand(time(NULL));
     if (rand_num < success_rate) {
         set_console(S_BATTLE, 0, "도망에 성공했다!\n");
         *status = 2;
@@ -184,7 +189,7 @@ void    attack(int item, p_t *player, p_t *enemy){
 
     (void)item;
     damage = get_weight(get_type(player->type), get_type(enemy->type));
-    damage ? set_console(2, 0, "효과는 굉장했다!\n") : set_console(2, 0, "효과는 별로였다.\n");
+    damage >= 1 ? set_console(2, 0, "효과는 굉장했다!\n") : set_console(2, 0, "효과는 별로인 듯 하다.\n");
     fflush_and_getc();
     damage *= player->min_attack_power;
     enemy->min_HP -= damage;
@@ -246,9 +251,6 @@ void    free_node(int status, p_t *enemy, p_t *player, p_list_t *list){
     }
 }
 
-/**
- * 
-*/
 void    battle(user_t *user, p_list_t *list){
     int status = 0;
     p_t *enemy, *player;

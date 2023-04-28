@@ -30,14 +30,3 @@ void	print_gard(int status){
   }
   fclose(fp);
 }
-
-void    print_gard2(char *path){
-	FILE *fp = fopen(path, "r");
-
-	int c;
-	while ((c = fgetc(fp)) != EOF) {
-		printf(YELLOW"%c"DEFAULT, c);
-    }
-    fclose(fp);
-	printf(YELLOW"%s"DEFAULT, BAR);
-}

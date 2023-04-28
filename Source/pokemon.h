@@ -31,6 +31,11 @@
 #define MO 0
 #define ME 1
 
+/*type*/
+#define FIRE 0
+#define WATER 1
+#define GRASS 2
+
 typedef struct p_s{
     char        *name;
     char        *type;
@@ -62,8 +67,6 @@ typedef enum status_s{
     S_BAG
 }status_t;
 
-typedef enum type_e { NORMAL, FIRE, WATER, GRASS } type_t;
-
 /*pokemon.c*/
 void	set_console(int status, int newpage, char *str);
 
@@ -93,7 +96,6 @@ void    market(user_t *user);
 void    save_user_data(user_t *user);
 
 /*utils.c*/
-void    print_gard2(char *path);
 void	print_gard(int status);
 char	fflush_and_getc();
 int     terminate(char *str);

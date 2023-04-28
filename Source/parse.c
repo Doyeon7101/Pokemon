@@ -50,7 +50,7 @@ void	init_user_data(user_t *user){
  * @return void
  */
 void	parse_user_data(FILE *fp, user_t *user){
-	char line[100] = {};
+	char	line[100] = {};
 
 	ListInit(user->list);
 	while (fgets(line, 100, fp) != NULL){
@@ -73,7 +73,7 @@ void	parse_user_data(FILE *fp, user_t *user){
 	}
 }
 
-bool parse_and_validation(p_list_t *list){
+bool	parse_and_validation(p_list_t *list){
 	FILE	*fp;
 	char	line[100];
 
