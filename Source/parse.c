@@ -35,7 +35,7 @@ void	init_user_data(user_t *user){
 
 	user->item[MO] = 0;
 	user->item[ME] = 0;
-	user->money = 1000;
+	user->money = 10000;
 	if (!(fp = fopen("./GameData/DefaultUserData", "r"))){
 		set_console(0, 1, "기본 데이터를 찾을 수 없습니다. 프로그램을 재설치 하세요.\n");
 		exit(1);

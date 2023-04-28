@@ -97,10 +97,10 @@ int monsterball(user_t *user, p_t *enemy, int *status){
     user->item[MO]--;
     if (get_success_rate(enemy->min_HP, hp_range, catch_prob, 3) < ((double)rand() / RAND_MAX)){
         set_console(4, 0, "잡았다!\n"); fflush_and_getc();
+        *status = 3;
         enemy->next = list->head->next;
         list->head->next = enemy;
         list->numOfData++;
-        *status = 3;
         return 1;
     }
     set_console(4, 0, "앗 몬스터볼이 깨졌다...\n"); fflush_and_getc();
@@ -121,7 +121,8 @@ int bag(user_t *user, p_t *player, p_t *enemy, int *status){
     char    c;
 
     if (user->item[MO] == 0 && user->item[ME] == 0){
-        set_console(4, 0, "가방이 비어있다.\n"); fflush_and_getc(); return -1;
+        set_console(4, 0, "가방이 비어있다.\n"); fflush_and_getc();
+        return -1;
     }
     while(1){
         c = print_bag(user);
@@ -131,13 +132,15 @@ int bag(user_t *user, p_t *player, p_t *enemy, int *status){
         }
         else if (c == '1'){
             monsterball(user, enemy, status);
-            if (*status){
-                if (user->list->numOfData == 6) pokemon_free_all(user->list);
+            if (user->list->numOfData == 6){
+                pokemon_free_all(user->list);
+                *status = 3;
                 while(1){
                     set_console(4, 0, "넌 이제 내꺼야! 여행을 떠나볼까?(Y/N)\n"); c = fflush_and_getc();
                     if (c == 'N'){
                         pokemon_free_all(user->list);
                         save_user_data(user);
+                        set_console(4, 0, "저장완료!\n"); fflush_and_getc();
                         set_console(4, 0, "다음에 또 만나자!\n"); fflush_and_getc();
                         exit(0);
                     }
@@ -199,7 +202,8 @@ void    player_turn(user_t *user, p_t *player, p_t *enemy, int *status){
             set_console(2, 0, "플레이어의 공격!\n");
             attack(0, player, enemy); break; }
         else if (c == '2'){ run_away(enemy, status); break; }
-        else if (c == '3'){ if(bag(user, player, enemy, status) != -1) break; }
+        else if (c == '3'){
+            if (bag(user, player, enemy, status) == 1) break;}
         else set_console(2, 1, "올바른 값을 다시 입력해주세요.\n");
     }
     if (enemy->min_HP <= 0 && !(*status)){
@@ -226,7 +230,10 @@ void    enemy_turn(user_t *user, p_t *player, p_t *enemy, int *status){
             set_console(S_BATTLE, 0, RED"기본 포켓몬이 체력을 회복하였습니다.\n"DEFAULT); fflush_and_getc();
             player->min_HP = player->max_HP;
         }
-        else player = pick_player_pokemon(user->list);
+        else{
+            delete_node(user->list, player);
+            player = pick_player_pokemon(user->list);
+        }
     }
 }
 
